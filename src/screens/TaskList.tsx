@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import Task from '../components/Task';
 
 import commonStyles from '../commonStyles';
 
 import 'moment/locale/pt-br';
 import moment from 'moment';
-import Task from '../components/Task';
 
 export default class TaskList extends Component {
   render() {

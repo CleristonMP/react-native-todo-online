@@ -1,14 +1,26 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TextStyle} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import commonStyles from '../commonStyles';
+
+import 'moment/locale/pt-br';
+import moment from 'moment';
 
 export default (props: any) => {
+  const doneOrNotStyle: TextStyle =
+    props.doneAt != null
+      ? {textDecorationLine: 'line-through'}
+      : {textDecorationLine: 'none'};
+
+  const date = props.doneAt ? props.doneAt : props.estimateAt;
+  const formattedDate = moment(date).locale('pt-br').format('ddd, D [de] MMMM');
+
   return (
     <View style={styles.container}>
       <View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
       <View>
-        <Text>{props.desc + ''}</Text>
-        <Text>{props.estimateAt + ''}</Text>
+        <Text style={[styles.desc, doneOrNotStyle]}>{props.desc + ''}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
       </View>
     </View>
   );
@@ -53,5 +65,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#4D7031',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  desc: {
+    fontFamily: commonStyles.fontFamily,
+    color: commonStyles.colors.mainText,
+    fontSize: 15,
+  },
+  date: {
+    fontFamily: commonStyles.fontFamily,
+    color: commonStyles.colors.subText,
+    fontSize: 12,
   },
 });
