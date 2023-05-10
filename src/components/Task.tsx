@@ -34,7 +34,7 @@ function getCheckView(doneAt: any) {
       </View>
     );
   } else {
-    return <View style={styles.pending}></View>;
+    return <View style={styles.pending} />;
   }
 }
 
