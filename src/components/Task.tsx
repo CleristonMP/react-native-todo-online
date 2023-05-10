@@ -1,5 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet, TextStyle} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextStyle,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyles from '../commonStyles';
 
@@ -17,7 +23,9 @@ export default (props: any) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
+      <TouchableWithoutFeedback onPress={() => props.toggleTask(props.id)}>
+        <View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
+      </TouchableWithoutFeedback>
       <View>
         <Text style={[styles.desc, doneOrNotStyle]}>{props.desc + ''}</Text>
         <Text style={styles.date}>{formattedDate}</Text>
