@@ -13,23 +13,40 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import commonStyles from '../commonStyles';
+import {TaskType} from '../types/task-type';
 
 type Props = {
   isVisible: boolean;
   onCancel: (event: NativeSyntheticEvent<any>) => void;
+  onSave: Function;
 };
 
-const initialState = {desc: '', date: new Date(), showDatePicker: false};
+const initialState = {
+  task: {
+    desc: '',
+    estimateAt: new Date(),
+  } as TaskType,
+  showDatePicker: false,
+};
 
 export default class AddTask extends Component<Props> {
   state = {
     ...initialState,
   };
 
+  save = () => {
+    const newTask = {
+      ...initialState,
+    };
+
+    this.props.onSave(newTask);
+    this.setState({...initialState});
+  };
+
   getDatePicker = () => {
     let datePicker = (
       <DateTimePicker
-        value={this.state.date}
+        value={this.state.task.estimateAt}
         onChange={(_: any, date: any) =>
           this.setState({date, showDatePicker: false})
         }
@@ -37,7 +54,7 @@ export default class AddTask extends Component<Props> {
       />
     );
 
-    const dateString = moment(this.state.date).format(
+    const dateString = moment(this.state.task.estimateAt).format(
       'ddd, D [de] MMMM [de] YYYY',
     );
 
@@ -53,6 +70,12 @@ export default class AddTask extends Component<Props> {
       );
     }
     return datePicker;
+  };
+
+  handleChangeText = (desc: string) => {
+    const newState = {...this.state};
+    newState.task.desc = desc;
+    this.setState(newState);
   };
 
   render() {
@@ -72,8 +95,8 @@ export default class AddTask extends Component<Props> {
           <TextInput
             style={styles.input}
             placeholder="Informe a descrição..."
-            onChangeText={desc => this.setState({desc})}
-            value={this.state.desc}
+            onChangeText={desc => this.handleChangeText(desc)}
+            value={this.state.task.desc}
           />
           {this.getDatePicker()}
 
@@ -81,7 +104,7 @@ export default class AddTask extends Component<Props> {
             <TouchableOpacity onPress={this.props.onCancel}>
               <Text style={styles.btn}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={this.save}>
               <Text style={styles.btn}>Salvar</Text>
             </TouchableOpacity>
           </View>

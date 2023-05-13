@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
 import Task from '../components/Task';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -14,6 +15,7 @@ import commonStyles from '../commonStyles';
 import 'moment/locale/pt-br';
 import moment from 'moment';
 import AddTask from './AddTask';
+import {TaskType} from '../types/task-type';
 
 export default class TaskList extends Component {
   state = {
@@ -66,6 +68,23 @@ export default class TaskList extends Component {
     this.setState({tasks}, this.filterTasks);
   };
 
+  addTask = ({task}: any) => {
+    if (!task.desc || !task.desc.trim()) {
+      Alert.alert('Dados Inválidos', 'Descrição não informada!');
+      return;
+    }
+
+    const tasks = [...this.state.tasks];
+    tasks.push({
+      id: Math.random(),
+      desc: task.desc,
+      estimateAt: task.estimateAt,
+      doneAt: null,
+    });
+
+    this.setState({tasks, showAddTask: false}, this.filterTasks);
+  };
+
   render() {
     const today = moment().locale('pt-br').format('ddd, D [de] MMMM');
     return (
@@ -73,6 +92,7 @@ export default class TaskList extends Component {
         <AddTask
           isVisible={this.state.showAddTask}
           onCancel={() => this.setState({showAddTask: false})}
+          onSave={this.addTask}
         />
         <ImageBackground
           source={require('../../assets/imgs/today.jpg')}
@@ -94,7 +114,7 @@ export default class TaskList extends Component {
         <View style={styles.taskList}>
           <FlatList
             data={this.state.visibleTasks}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item: TaskType) => item.id.toString()}
             renderItem={({item}) => (
               <Task {...item} toggleTask={this.toggleTask} />
             )}
