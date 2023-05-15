@@ -16,6 +16,7 @@ import 'moment/locale/pt-br';
 import moment from 'moment';
 import AddTask from './AddTask';
 import {TaskType} from '../types/task-type';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 export default class TaskList extends Component {
   state = {
@@ -112,13 +113,15 @@ export default class TaskList extends Component {
           </View>
         </ImageBackground>
         <View style={styles.taskList}>
-          <FlatList
-            data={this.state.visibleTasks}
-            keyExtractor={(item: TaskType) => item.id.toString()}
-            renderItem={({item}) => (
-              <Task {...item} toggleTask={this.toggleTask} />
-            )}
-          />
+          <GestureHandlerRootView>
+            <FlatList
+              data={this.state.visibleTasks}
+              keyExtractor={(item: TaskType) => item.id.toString()}
+              renderItem={({item}) => (
+                <Task {...item} toggleTask={this.toggleTask} />
+              )}
+            />
+          </GestureHandlerRootView>
         </View>
         <TouchableOpacity
           style={styles.addButton}
