@@ -17,30 +17,24 @@ import moment from 'moment';
 import AddTask from './AddTask';
 import {TaskType} from '../types/task-type';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const initialState = {
+  showDoneTasks: true,
+  showAddTask: false,
+  visibleTasks: [],
+  tasks: [] as TaskType[],
+};
 
 export default class TaskList extends Component {
   state = {
-    showDoneTasks: true,
-    showAddTask: false,
-    visibleTasks: [],
-    tasks: [
-      {
-        id: Math.random(),
-        desc: 'Compra livro',
-        estimateAt: new Date(),
-        doneAt: new Date(),
-      },
-      {
-        id: Math.random(),
-        desc: 'Ler livro',
-        estimateAt: new Date(),
-        doneAt: null,
-      },
-    ],
+    ...initialState,
   };
 
-  componentDidMount = () => {
-    this.filterTasks();
+  componentDidMount = async () => {
+    const stateString = await AsyncStorage.getItem('tasksState');
+    const state = JSON.parse(stateString || JSON.stringify(initialState));
+    this.setState(state, this.filterTasks);
   };
 
   toggleFilter = () => {
@@ -57,6 +51,7 @@ export default class TaskList extends Component {
     }
 
     this.setState({visibleTasks});
+    AsyncStorage.setItem('tasksState', JSON.stringify(this.state));
   };
 
   toggleTask = (taskId: number) => {
