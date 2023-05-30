@@ -18,6 +18,8 @@ import AddTask from './AddTask';
 import {TaskType} from '../types/task-type';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {server, showError} from '../common';
+import axios from 'axios';
 
 const initialState = {
   showDoneTasks: true,
@@ -33,8 +35,25 @@ export default class TaskList extends Component {
 
   componentDidMount = async () => {
     const stateString = await AsyncStorage.getItem('tasksState');
-    const state = JSON.parse(stateString || JSON.stringify(initialState));
-    this.setState(state, this.filterTasks);
+    const savedState = JSON.parse(stateString || JSON.stringify(initialState));
+    this.setState(
+      {
+        showDoneTasks: savedState.showDoneTasks,
+      },
+      this.filterTasks,
+    );
+
+    this.loadTasks();
+  };
+
+  loadTasks = async () => {
+    try {
+      const maxDate = moment().format('YYYY-MM-DD 23:59:59');
+      const res = await axios.get(`${server}/tasks?date=${maxDate}`);
+      this.setState({tasks: res.data}, this.filterTasks);
+    } catch (e) {
+      showError(e);
+    }
   };
 
   toggleFilter = () => {
@@ -51,39 +70,48 @@ export default class TaskList extends Component {
     }
 
     this.setState({visibleTasks});
-    AsyncStorage.setItem('tasksState', JSON.stringify(this.state));
+    AsyncStorage.setItem(
+      'tasksState',
+      JSON.stringify({
+        showDoneTasks: this.state.showDoneTasks,
+      }),
+    );
   };
 
-  toggleTask = (taskId: number) => {
-    const tasks = [...this.state.tasks];
-    tasks.forEach(task => {
-      if (task.id === taskId) {
-        task.doneAt = task.doneAt ? null : new Date();
-      }
-    });
-    this.setState({tasks}, this.filterTasks);
+  toggleTask = async (taskId: number) => {
+    try {
+      await axios.put(`${server}/tasks/${taskId}/toggle`);
+      this.loadTasks();
+    } catch (e) {
+      showError(e);
+    }
   };
 
-  addTask = ({task}: any) => {
-    if (!task.desc || !task.desc.trim()) {
+  addTask = async (newTask: any) => {
+    if (!newTask.desc || !newTask.desc.trim()) {
       Alert.alert('Dados Inválidos', 'Descrição não informada!');
       return;
     }
 
-    const tasks = [...this.state.tasks];
-    tasks.push({
-      id: Math.random(),
-      desc: task.desc,
-      estimateAt: task.estimateAt,
-      doneAt: null,
-    });
+    try {
+      await axios.post(`${server}/tasks`, {
+        desc: newTask.desc,
+        estimateAt: moment(newTask.date).format('YYYY-MM-DD hh:mm:ss'),
+      });
 
-    this.setState({tasks, showAddTask: false}, this.filterTasks);
+      this.setState({showAddTask: false}, this.loadTasks);
+    } catch (e) {
+      showError(e);
+    }
   };
 
-  deleteTask = (id: number) => {
-    const tasks = this.state.tasks.filter(task => task.id !== id);
-    this.setState({tasks}, this.filterTasks);
+  deleteTask = async (taskId: number) => {
+    try {
+      await axios.delete(`${server}/tasks/${taskId}`);
+      this.loadTasks();
+    } catch (e) {
+      showError(e);
+    }
   };
 
   render() {

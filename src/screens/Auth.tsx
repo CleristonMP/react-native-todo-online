@@ -24,9 +24,9 @@ type Props = {
 
 const initialState = {
   name: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
+  email: 'maria@gmail.com',
+  password: '123456',
+  confirmPassword: '123456',
   stageNew: false,
 };
 
@@ -72,6 +72,20 @@ export default class Auth extends Component<Props> {
   };
 
   render() {
+    const validations = [];
+    validations.push(
+      this.state.email &&
+        this.state.email.match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/),
+    );
+    validations.push(this.state.password && this.state.password.length >= 6);
+
+    if (this.state.stageNew) {
+      validations.push(this.state.name && this.state.name.trim().length >= 3);
+      validations.push(this.state.password === this.state.confirmPassword);
+    }
+
+    const validForm = validations.reduce((t, a) => t && a);
+
     return (
       <ImageBackground source={bckgImg} style={styles.background}>
         <Text style={styles.title}>Tasks</Text>
@@ -115,8 +129,8 @@ export default class Auth extends Component<Props> {
               secureTextEntry={true}
             />
           )}
-          <TouchableOpacity onPress={this.signInOrsignUp}>
-            <View style={styles.button}>
+          <TouchableOpacity onPress={this.signInOrsignUp} disabled={!validForm}>
+            <View style={[styles.button, validForm ? {} : styles.disabledBtn]}>
               <Text style={styles.buttonText}>
                 {this.state.stageNew ? 'Registrar' : 'Entrar'}
               </Text>
@@ -172,6 +186,9 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     borderRadius: 10,
+  },
+  disabledBtn: {
+    backgroundColor: '#AAA',
   },
   buttonText: {
     fontFamily: commonStyles.fontFamily,

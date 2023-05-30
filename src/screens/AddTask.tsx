@@ -13,7 +13,6 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import commonStyles from '../commonStyles';
-import {TaskType} from '../types/task-type';
 
 type Props = {
   isVisible: boolean;
@@ -21,40 +20,40 @@ type Props = {
   onSave: Function;
 };
 
-const initialState = {
-  task: {
-    desc: '',
-    estimateAt: new Date(),
-  } as TaskType,
-  showDatePicker: false,
-};
+// const initialState = {
+//   desc: '',
+//   estimateAt: new Date(),
+//   showDatePicker: false,
+// };
 
 export default class AddTask extends Component<Props> {
   state = {
-    ...initialState,
+    desc: '',
+    estimateAt: new Date(),
+    showDatePicker: false,
   };
 
   save = () => {
     const newTask = {
-      ...initialState,
+      ...this.state,
     };
 
     this.props.onSave(newTask);
-    this.setState({...initialState});
+    this.setState({...newTask});
   };
 
   getDatePicker = () => {
     let datePicker = (
       <DateTimePicker
-        value={this.state.task.estimateAt}
+        value={this.state.estimateAt}
         onChange={(_: any, date: any) =>
-          this.setState({date, showDatePicker: false})
+          this.setState({estimateAt: date, showDatePicker: false})
         }
         mode="date"
       />
     );
 
-    const dateString = moment(this.state.task.estimateAt).format(
+    const dateString = moment(this.state.estimateAt).format(
       'ddd, D [de] MMMM [de] YYYY',
     );
 
@@ -74,8 +73,8 @@ export default class AddTask extends Component<Props> {
 
   handleChangeText = (desc: string) => {
     const newState = {...this.state};
-    newState.task.desc = desc;
-    this.setState(newState);
+    newState.desc = desc;
+    this.setState({desc: newState.desc});
   };
 
   render() {
@@ -96,7 +95,7 @@ export default class AddTask extends Component<Props> {
             style={styles.input}
             placeholder="Informe a descrição..."
             onChangeText={desc => this.handleChangeText(desc)}
-            value={this.state.task.desc}
+            value={this.state.desc}
           />
           {this.getDatePicker()}
 
