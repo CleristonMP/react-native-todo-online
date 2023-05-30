@@ -20,12 +20,6 @@ type Props = {
   onSave: Function;
 };
 
-// const initialState = {
-//   desc: '',
-//   estimateAt: new Date(),
-//   showDatePicker: false,
-// };
-
 export default class AddTask extends Component<Props> {
   state = {
     desc: '',
