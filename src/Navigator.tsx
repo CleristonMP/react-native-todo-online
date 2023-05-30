@@ -9,6 +9,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import Auth from './screens/Auth';
 import TaskList from './screens/TaskList';
 import commonStyles from './commonStyles';
+import Menu from './screens/Menu';
 
 const menuConfig: DrawerNavigationOptions = {
   drawerLabelStyle: {
@@ -22,10 +23,15 @@ const menuConfig: DrawerNavigationOptions = {
 
 const Drawer = createDrawerNavigator();
 
-function MyDrawer() {
+const MyDrawer = (props: any) => {
+  const {email, name} = props.navigation.state.params;
+
   return (
     <NavigationContainer>
-      <Drawer.Navigator screenOptions={menuConfig} initialRouteName="Hoje">
+      <Drawer.Navigator
+        drawerContent={props => <Menu {...props} email={email} name={name} />}
+        screenOptions={menuConfig}
+        initialRouteName="Hoje">
         <Drawer.Screen name="Hoje">
           {(props: any) => <TaskList title="Hoje" daysAhead={0} {...props} />}
         </Drawer.Screen>
@@ -41,7 +47,7 @@ function MyDrawer() {
       </Drawer.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 const mainRoutes = {
   Auth: {
