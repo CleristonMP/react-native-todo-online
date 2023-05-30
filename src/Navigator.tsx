@@ -1,17 +1,31 @@
 import React from 'react';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import {
+  DrawerNavigationOptions,
+  createDrawerNavigator,
+} from '@react-navigation/drawer';
+import {NavigationContainer} from '@react-navigation/native';
 
 import Auth from './screens/Auth';
 import TaskList from './screens/TaskList';
-import {NavigationContainer} from '@react-navigation/native';
+import commonStyles from './commonStyles';
+
+const menuConfig: DrawerNavigationOptions = {
+  drawerLabelStyle: {
+    fontFamily: commonStyles.fontFamily,
+    fontWeight: 'normal',
+    fontSize: 20,
+  },
+  drawerActiveTintColor: '#080',
+  headerShown: false,
+};
 
 const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Hoje">
+      <Drawer.Navigator screenOptions={menuConfig} initialRouteName="Hoje">
         <Drawer.Screen name="Hoje">
           {(props: any) => <TaskList title="Hoje" daysAhead={0} {...props} />}
         </Drawer.Screen>
