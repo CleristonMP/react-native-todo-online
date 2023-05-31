@@ -10,6 +10,7 @@ import Auth from './screens/Auth';
 import TaskList from './screens/TaskList';
 import commonStyles from './commonStyles';
 import Menu from './screens/Menu';
+import AuthOrApp from './screens/AuthOrApp';
 
 const menuConfig: DrawerNavigationOptions = {
   drawerLabelStyle: {
@@ -50,6 +51,10 @@ const MyDrawer = (props: any) => {
 };
 
 const mainRoutes = {
+  AuthOrApp: {
+    name: 'AuthOrApp',
+    screen: AuthOrApp,
+  },
   Auth: {
     name: 'Auth',
     screen: Auth,
@@ -61,7 +66,7 @@ const mainRoutes = {
 };
 
 const mainNavigator = createSwitchNavigator(mainRoutes, {
-  initialRouteName: 'Auth',
+  initialRouteName: 'AuthOrApp',
 });
 
 export default createAppContainer(mainNavigator);

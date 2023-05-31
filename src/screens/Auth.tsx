@@ -17,6 +17,7 @@ import {
   NavigationScreenProp,
   NavigationState,
 } from 'react-navigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
   navigation: NavigationScreenProp<NavigationState, NavigationParams>;
@@ -24,9 +25,9 @@ type Props = {
 
 const initialState = {
   name: '',
-  email: 'maria@gmail.com',
-  password: '123456',
-  confirmPassword: '123456',
+  email: '',
+  password: '',
+  confirmPassword: '',
   stageNew: false,
 };
 
@@ -64,6 +65,7 @@ export default class Auth extends Component<Props> {
         email: this.state.email,
         password: this.state.password,
       });
+      AsyncStorage.setItem('userData', JSON.stringify(res.data));
       axios.defaults.headers.common.Authorization = `bearer ${res.data.token}`;
       this.props.navigation.navigate('Home', res.data);
     } catch (e) {
