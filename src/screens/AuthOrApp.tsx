@@ -1,16 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NavigationState} from '@react-navigation/native';
 import axios from 'axios';
 import React, {Component} from 'react';
 import {View, ActivityIndicator, StyleSheet} from 'react-native';
-import {NavigationParams, NavigationScreenProp} from 'react-navigation';
 
-type Props = {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-};
-
-export default class AuthOrApp extends Component<Props> {
+export default class AuthOrApp extends Component {
   async componentDidMount() {
+    const componentProps: any = this.props;
+
     const userDataJson = await AsyncStorage.getItem('userData');
     let userData = null;
     try {
@@ -21,9 +17,9 @@ export default class AuthOrApp extends Component<Props> {
 
     if (userData && userData.token) {
       axios.defaults.headers.common.Authorization = `bearer ${userData.token}`;
-      this.props.navigation.navigate('Home', userData);
+      componentProps.navigation.navigate('Home', userData);
     } else {
-      this.props.navigation.navigate('Auth');
+      componentProps.navigation.navigate('Auth');
     }
   }
 

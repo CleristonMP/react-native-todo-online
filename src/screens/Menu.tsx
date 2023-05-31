@@ -3,11 +3,24 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Gravatar} from 'react-native-gravatar';
 import commonStyles from '../commonStyles';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
+import {StackTypes} from '../Navigator';
 
 export default (props: any) => {
+  const navigation = useNavigation<StackTypes>();
+
+  const logout = () => {
+    delete axios.defaults.headers.common.Authorization;
+    AsyncStorage.removeItem('userData');
+    navigation.navigate('Auth');
+  };
+
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.header}>
@@ -23,6 +36,11 @@ export default (props: any) => {
           <Text style={styles.name}>{props.name}</Text>
           <Text style={styles.email}>{props.email}</Text>
         </View>
+        <TouchableOpacity onPress={logout}>
+          <View style={styles.logoutIcon}>
+            <Icon name="sign-out" size={30} color="#800" />
+          </View>
+        </TouchableOpacity>
       </View>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
@@ -62,6 +80,10 @@ const styles = StyleSheet.create({
     fontFamily: commonStyles.fontFamily,
     fontSize: 15,
     color: commonStyles.colors.subText,
+    marginBottom: 10,
+  },
+  logoutIcon: {
+    marginLeft: 10,
     marginBottom: 10,
   },
 });

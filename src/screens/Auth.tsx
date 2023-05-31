@@ -6,22 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 import bckgImg from '../../assets/imgs/login.jpg';
 import commonStyles from '../commonStyles';
 import AuthInput from '../components/AuthInput';
-import axios from 'axios';
 import {server, showError, showSuccess} from '../common';
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from 'react-navigation';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-type Props = {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-};
 
 const initialState = {
   name: '',
@@ -31,7 +22,7 @@ const initialState = {
   stageNew: false,
 };
 
-export default class Auth extends Component<Props> {
+export default class Auth extends Component {
   state = {
     ...initialState,
   };
@@ -60,6 +51,7 @@ export default class Auth extends Component<Props> {
   };
 
   signIn = async () => {
+    const componentProps: any = this.props;
     try {
       const res = await axios.post(`${server}/signin`, {
         email: this.state.email,
@@ -67,7 +59,7 @@ export default class Auth extends Component<Props> {
       });
       AsyncStorage.setItem('userData', JSON.stringify(res.data));
       axios.defaults.headers.common.Authorization = `bearer ${res.data.token}`;
-      this.props.navigation.navigate('Home', res.data);
+      componentProps.navigation.navigate('Home', res.data);
     } catch (e) {
       showError(e);
     }
